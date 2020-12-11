@@ -12,3 +12,4 @@ shift - double speed
 wasd - movement
 
 You can set the speed in the numeric input box.
+Executable's in bin/x64/Debug

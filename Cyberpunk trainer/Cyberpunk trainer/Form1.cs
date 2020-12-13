@@ -43,7 +43,7 @@ namespace Cyberpunk_trainer
             mainMod = gameProc.MainModule;
             foreach (ProcessModule mod in gameProc.Modules)
             {
-                if (mod.FileName == "D:\\Program Files\\Cyberpunk 2077\\bin\\x64\\PhysX3_x64.dll") // positions of player are in the physx3 dll
+                if (mod.FileName.Contains("PhysX3_x64.dll")) // positions of player are in the physx3 dll
                 {
                     physMod = mod;
                     break;

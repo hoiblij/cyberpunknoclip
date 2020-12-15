@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.XPath;
 using Ownskit.Utils;
 
 namespace Cyberpunk_trainer
@@ -43,7 +44,7 @@ namespace Cyberpunk_trainer
             mainMod = gameProc.MainModule;
             foreach (ProcessModule mod in gameProc.Modules)
             {
-                if (mod.ModuleName == "PhysX3_x64.dll") // positions of player are in the physx3 dll
+                if (mod.ModuleName == "PhysX3_x64.dll") // positions and speeds of player are in the physx3 dll
                 {
                     physMod = mod;
                     break;
@@ -116,7 +117,7 @@ namespace Cyberpunk_trainer
             float orient = MemoryFunctions.ReadMem(hProc, orientAddress);
             //looks confusing, its really just figuring shit out by moving the mouse and looking at the values
             //angle goes in the 0-90 range from 0-1, 90-180 from 1-0, 180-270 from 0-(-1), 270-360 from (-1)-0
-            //we another value i called orientation to figure out how the angle should be mapped to go to 0-360
+            //used another value I called orientation to figure out how the angle should be mapped to go to 0-360
             if (angle >= 0 && orient >= 0) 
                 angle = angle * 90;
             else if (angle >= 0 && orient < 0)
@@ -154,13 +155,13 @@ namespace Cyberpunk_trainer
         {
             //addresses tend to change when the player dies, so we update them every 5 seconds
             xAddress = MemoryFunctions.GetDMAAddy(hProc, physMod.BaseAddress + 0x25FC20, new IntPtr[] { (IntPtr)0x58, (IntPtr)0x0, (IntPtr)0x60, (IntPtr)0x0, (IntPtr)0x50, (IntPtr)0x20, (IntPtr)0x210 });
-            yAddress = MemoryFunctions.GetDMAAddy(hProc, physMod.BaseAddress + 0x25FC20, new IntPtr[] { (IntPtr)0x58, (IntPtr)0x0, (IntPtr)0x60, (IntPtr)0x0, (IntPtr)0x50, (IntPtr)0x20, (IntPtr)0x220 });
-            zAddress = MemoryFunctions.GetDMAAddy(hProc, physMod.BaseAddress + 0x25FC20, new IntPtr[] { (IntPtr)0x58, (IntPtr)0x0, (IntPtr)0x60, (IntPtr)0x0, (IntPtr)0x50, (IntPtr)0x20, (IntPtr)0x218 });
-            xSpeedAddress = MemoryFunctions.GetDMAAddy(hProc, mainMod.BaseAddress + 0x4942C48, new IntPtr[] { (IntPtr)0x20, (IntPtr)0x8, (IntPtr)0x0, (IntPtr)0x8, (IntPtr)0xd8, (IntPtr)0x0, (IntPtr)0x114 });
-            ySpeedAddress = MemoryFunctions.GetDMAAddy(hProc, mainMod.BaseAddress + 0x4942C48, new IntPtr[] { (IntPtr)0x20, (IntPtr)0x8, (IntPtr)0x0, (IntPtr)0x8, (IntPtr)0xd8, (IntPtr)0x0, (IntPtr)0x11C });
-            zSpeedAddress = MemoryFunctions.GetDMAAddy(hProc, mainMod.BaseAddress + 0x4942C48, new IntPtr[] { (IntPtr)0x20, (IntPtr)0x8, (IntPtr)0x0, (IntPtr)0x8, (IntPtr)0xd8, (IntPtr)0x0, (IntPtr)0x118 });
-            rotAddress = MemoryFunctions.GetDMAAddy(hProc, mainMod.BaseAddress + 0x45BB8F8, new IntPtr[] { (IntPtr)0x480, (IntPtr)0x1b0, (IntPtr)0xd0, (IntPtr)0x680, (IntPtr)0xb8, (IntPtr)0x8, (IntPtr)0x6CC });
-            orientAddress = MemoryFunctions.GetDMAAddy(hProc, mainMod.BaseAddress + 0x45BB8F8, new IntPtr[] { (IntPtr)0x480, (IntPtr)0x1b0, (IntPtr)0xd0, (IntPtr)0x680, (IntPtr)0xb8, (IntPtr)0x8, (IntPtr)0x7E4 });
+            yAddress = xAddress + 0x10;
+            zAddress = xAddress + 0x8;
+            xSpeedAddress = MemoryFunctions.GetDMAAddy(hProc, physMod.BaseAddress + 0x25FC20, new IntPtr[] { (IntPtr)0x58, (IntPtr)0x0, (IntPtr)0x8, (IntPtr)0x8, (IntPtr)0xd8, (IntPtr)0x0, (IntPtr)0x114 });
+            ySpeedAddress = xSpeedAddress + 0x8;
+            zSpeedAddress = xSpeedAddress + 0x4;
+            orientAddress = MemoryFunctions.GetDMAAddy(hProc, mainMod.BaseAddress + 0x463C2E0, new IntPtr[] { (IntPtr)0x28, (IntPtr)0x18, (IntPtr)0x68, (IntPtr)0x20, (IntPtr)0xb0, (IntPtr)0xf8, (IntPtr)0x0 });
+            rotAddress = orientAddress + 0x10;
         }
     }
 }
